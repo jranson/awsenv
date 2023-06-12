@@ -42,7 +42,7 @@ func parseNewCreds(input []byte, nameOverride string) *ProfileEntry {
 	var foundKeyId bool
 
 	for _, l := range strings.Split(string(input), "\n") {
-		// this part handles export lines (Option 1)
+		// this part handles export lines (Option 1) for MacOS / Linux
 		if strings.HasPrefix(l, "export AWS_ACCESS_KEY_ID=") {
 			setupAccessObj()
 			pe.Lines = append(pe.Lines,
@@ -57,6 +57,34 @@ func parseNewCreds(input []byte, nameOverride string) *ProfileEntry {
 			pe.Lines = append(pe.Lines,
 				"aws_session_token="+strings.Trim(l[25:], `"`))
 
+			// this part handles export lines (Option 1) for Windows
+		} else if strings.HasPrefix(l, "SET AWS_ACCESS_KEY_ID=") {
+			setupAccessObj()
+			pe.Lines = append(pe.Lines,
+				"aws_access_key_id="+strings.Trim(l[22:], `"`))
+			foundKeyId = true
+		} else if strings.HasPrefix(l, "SET AWS_SECRET_ACCESS_KEY=") {
+			setupAccessObj()
+			pe.Lines = append(pe.Lines,
+				"aws_secret_access_key="+strings.Trim(l[26:], `"`))
+		} else if strings.HasPrefix(l, "SET AWS_SESSION_TOKEN=") {
+			setupAccessObj()
+			pe.Lines = append(pe.Lines,
+				"aws_session_token="+strings.Trim(l[22:], `"`))
+			// this part handles export lines (Option 1) for PowerShell
+		} else if strings.HasPrefix(l, "$Env:AWS_ACCESS_KEY_ID=") {
+			setupAccessObj()
+			pe.Lines = append(pe.Lines,
+				"aws_access_key_id="+strings.Trim(l[23:], `"`))
+			foundKeyId = true
+		} else if strings.HasPrefix(l, "$Env:AWS_SECRET_ACCESS_KEY=") {
+			setupAccessObj()
+			pe.Lines = append(pe.Lines,
+				"aws_secret_access_key="+strings.Trim(l[27:], `"`))
+		} else if strings.HasPrefix(l, "$Env:AWS_SESSION_TOKEN=") {
+			setupAccessObj()
+			pe.Lines = append(pe.Lines,
+				"aws_session_token="+strings.Trim(l[23:], `"`))
 			// this part handles a newly-named TOML section from Option 2
 			// (e.g., [123456789012_MySelectedRole])
 		} else if strings.HasPrefix(l, "[") && strings.HasSuffix(l, "]") {
