@@ -3,12 +3,14 @@ package main
 import (
 	"fmt"
 	"os"
+	"path"
 	"strings"
 )
 
-const credsDir = ".aws/credentials"
+const credsDir = ".aws"
+const credsFile = "credentials"
 
-var credPath = os.Getenv("HOME") + "/" + credsDir
+var credPath = os.Getenv("HOME") + "/" + credsDir + "/" + credsFile
 
 // see https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html
 
@@ -198,6 +200,10 @@ func writeCreds(pes ProfileEntries) error {
 			sb.WriteString(l + "\n")
 		}
 		sb.WriteString("\n")
+	}
+	err := os.MkdirAll(path.Dir(credPath), 0700)
+	if err != nil {
+		return err
 	}
 	return os.WriteFile(credPath, []byte(sb.String()), 0600)
 }
