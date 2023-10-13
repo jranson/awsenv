@@ -29,7 +29,7 @@ func main() {
 	// this parses the clipboard data into a credential profile entry
 	pe := parseNewCreds(b, profileName)
 	if pe == nil {
-		fmt.Println("invalid credentials data in the clipboard")
+		fmt.Println("❌ invalid credentials data in the clipboard")
 		os.Exit(1)
 	}
 
@@ -52,10 +52,9 @@ func main() {
 	// this writes the credentiails file with the incoming credential injected
 	err = writeCreds(pes)
 	if err != nil {
+		fmt.Println("❌ profile not updated:", pe.Name)
 		fmt.Println(err)
 		os.Exit(1)
 	}
-
-	fmt.Println("profile", pe.Name, "updated.")
-
+	fmt.Println("✅ profile updated:", pe.Name)
 }
