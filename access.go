@@ -42,8 +42,8 @@ func parseNewCreds(input []byte, nameOverride string) *ProfileEntry {
 	}
 
 	var foundKeyId bool
-
-	for _, l := range strings.Split(string(input), "\n") {
+	lines := strings.Split(strings.ReplaceAll(string(input), "\r\n", "\n"), "\n")
+	for _, l := range lines {
 		// this part handles export lines (Option 1) for MacOS / Linux
 		if strings.HasPrefix(l, "export AWS_ACCESS_KEY_ID=") {
 			setupAccessObj()
